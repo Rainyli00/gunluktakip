@@ -20,6 +20,8 @@ class AnaEkran extends StatefulWidget {
 class _AnaEkranState extends State<AnaEkran> {
 var _gorevController;
 late List<Gorev> _gorevler;
+late List<bool> _YapilanGorevler;
+
 
 void veriKaydet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -70,13 +72,45 @@ void _getGorevler() async {
    for (dynamic d in list) {
     _gorevler.add(Gorev.fromMap(json.decode(d))); 
    }
+   
+
+   print(_gorevler);
+
+   _YapilanGorevler = List.generate(_gorevler.length,(index) => false);
 
 setState(() {
   
 });
-   print(_gorevler);
+
 
   }
+
+void GorevListeGuncelle() async {
+SharedPreferences prefs = await SharedPreferences.getInstance();
+List<Gorev> BekleyenGorevler =  [];
+
+for(int i=0; i < _gorevler.length ; i++)  {
+  if(!_YapilanGorevler[i]) BekleyenGorevler.add(_gorevler[i]); 
+}
+
+var BekleyenGorevlerEncoded = List.generate(
+    BekleyenGorevler.length, (i)=> json.encode(BekleyenGorevler[i].getMap()) );
+
+prefs.setString('gorev', json.encode(BekleyenGorevlerEncoded));
+
+_getGorevler();
+
+}
+
+
+void TumGorevSil() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString('gorev', json.encode([]));
+  _getGorevler();
+}
+
+
+
 
 @override
   void initState() {
@@ -96,7 +130,16 @@ setState(() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Günlük Görevler' ,style: GoogleFonts.lato()),backgroundColor: Colors.greenAccent,centerTitle: true,),
+      appBar: AppBar(
+      title: Text('Günlük Görevler' ,style: GoogleFonts.lato()),
+      actions: [
+        IconButton(onPressed: GorevListeGuncelle , icon: Icon(Icons.save)),
+
+        IconButton(onPressed: TumGorevSil , icon: Icon(Icons.delete))
+        
+      ],
+      backgroundColor: Colors.greenAccent,centerTitle: true,),
+      
 
       body: (_gorevler==null) ? Center(child: Text('Henüz bir görev eklenmedi!',style: GoogleFonts.lato(),), )
       
@@ -121,8 +164,14 @@ setState(() {
                 style: GoogleFonts.lato(fontSize: 16),
               ),
               Checkbox(
-                value: false, // Burada Checkbox'ın durumunu dinamik olarak değiştirebilirsiniz
-                onChanged: (value) => null, // Buraya state değişikliği için gerekli logiği ekleyebilirsiniz
+                value: _YapilanGorevler[_gorevler.indexOf(e)], // Burada Checkbox'ın durumunu dinamik olarak değiştirebilirsiniz
+                key: GlobalKey(),
+                onChanged: (value) {
+                 setState(() {
+                   _YapilanGorevler[_gorevler.indexOf(e)] = value ?? false;
+
+                 });
+                } // Buraya state değişikliği için gerekli logiği ekleyebilirsiniz
               ),
             ],
           ),
