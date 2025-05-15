@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gunluktakip/tema.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
 
 import '../model/gorev.dart';
 
@@ -111,80 +114,8 @@ void TumGorevSil() async {
 
 
 
-
-@override
-  void initState() {
-    super.initState();
-    _gorevController = TextEditingController();
-
-    _getGorevler();
-  } 
-
-@override
-  void dispose() {
-    _gorevController.dispose();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-      title: Text('Günlük Görevler' ,style: GoogleFonts.lato()),
-      actions: [
-        IconButton(onPressed: GorevListeGuncelle , icon: Icon(Icons.save)),
-
-        IconButton(onPressed: TumGorevSil , icon: Icon(Icons.delete))
-        
-      ],
-      backgroundColor: Colors.greenAccent,centerTitle: true,),
-      
-
-      body: (_gorevler==null) ? Center(child: Text('Henüz bir görev eklenmedi!',style: GoogleFonts.lato(),), )
-      
-    : Column(
-  children: [
-    Expanded(
-      child: ListView(
-        padding: EdgeInsets.all(10),
-        children: _gorevler.map((e) => Container(
-          margin: EdgeInsets.symmetric( vertical: 5),
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-          
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: Colors.black, width: 0.5),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                e.gorev,
-                style: GoogleFonts.lato(fontSize: 16),
-              ),
-              Checkbox(
-                value: _YapilanGorevler[_gorevler.indexOf(e)], // Burada Checkbox'ın durumunu dinamik olarak değiştirebilirsiniz
-                key: GlobalKey(),
-                onChanged: (value) {
-                 setState(() {
-                   _YapilanGorevler[_gorevler.indexOf(e)] = value ?? false;
-
-                 });
-                } // Buraya state değişikliği için gerekli logiği ekleyebilirsiniz
-              ),
-            ],
-          ),
-        )).toList(),
-      ),
-    ),
-  ],
-),
-
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add,color: Colors.white,),
-        backgroundColor: Colors.cyanAccent,
-        onPressed: () => showModalBottomSheet(
+void BottomSheetAc() {
+  showModalBottomSheet(
           context: context,
            builder: (BuildContext context) => Container(
           padding: EdgeInsets.all(20),
@@ -276,8 +207,105 @@ void TumGorevSil() async {
               ],
             ),
           ),
-        ),
+        );
+
+
+}
+
+
+@override
+  void initState() {
+    super.initState();
+    _gorevController = TextEditingController();
+
+    _getGorevler();
+  } 
+
+@override
+  void dispose() {
+    _gorevController.dispose();
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+      title: Text('Günlük Görevler' ,style: GoogleFonts.lato()),
+      actions: [
+        IconButton(onPressed: GorevListeGuncelle , icon: Icon(Icons.save)),
+
+        IconButton(onPressed: TumGorevSil , icon: Icon(Icons.delete))
+        
+      ],
+      backgroundColor: Colors.greenAccent,centerTitle: true,),
+      
+
+      body: (_gorevler.isEmpty) ? Center(child: Text('Henüz bir görev eklenmedi!',style: GoogleFonts.lato(),), )
+      
+    : Column(
+  children: [
+    Expanded(
+      child: ListView(
+        padding: EdgeInsets.all(10),
+        children: _gorevler.map((e) => Container(
+          margin: EdgeInsets.symmetric( vertical: 5),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+          
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: Colors.black, width: 0.5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                e.gorev,
+                style: GoogleFonts.lato(fontSize: 16),
+              ),
+              Checkbox(
+                value: _YapilanGorevler[_gorevler.indexOf(e)], // Burada Checkbox'ın durumunu dinamik olarak değiştirebilirsiniz
+                key: GlobalKey(),
+                onChanged: (value) {
+                 setState(() {
+                   _YapilanGorevler[_gorevler.indexOf(e)] = value ?? false;
+
+                 });
+                } // Buraya state değişikliği için gerekli logiği ekleyebilirsiniz
+              ),
+            ],
+          ),
+        )).toList(),
       ),
+    ),
+  ],
+),
+
+      floatingActionButton: SpeedDial(
+        child: Icon(Icons.menu,color: Colors.white,),
+        backgroundColor: Colors.cyanAccent,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            label: 'Görev Ekle',
+            backgroundColor: Colors.greenAccent,
+            onTap: () => BottomSheetAc(),
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.brightness_6),
+            
+            label: 'Tema Değiştir',
+            backgroundColor: Colors.redAccent,
+            onTap: () => Provider.of<Tema>(context, listen: false).temaDegistir(),
+
+          ),
+        ],
+      ),
+
+
+
+
     ); 
     
   }
