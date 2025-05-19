@@ -25,29 +25,33 @@ var _gorevController;
 late List<Gorev> _gorevler;
 late List<bool> _YapilanGorevler;
 
-
+// Yeni görev kaydeder
 void veriKaydet() async {
+    //Sharedpreferences başlatılır (yerel depolama için)
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Gorev g = Gorev.fromString(_gorevController.text);
-  //  prefs.setString('gorev', json.encode(g.getMap()));
+    Gorev g = Gorev.fromString(_gorevController.text); // textfield da girilien metne göre görev nesnesi oluşturur
+
   
   String gorevler = prefs.getString('gorev') ?? '[]';	
 
    List<dynamic> list = [];
+
+   //kayıtlı görevleri decode eder
 
   if (gorevler != null && gorevler.isNotEmpty) {
     var decoded = json.decode(gorevler);
     if (decoded is List) {
       list = decoded;
     } else {
-      // Eğer daha önce yanlışlıkla Map olarak kaydedildiyse sıfırla
+     
       list = [];
     }
   }
     print(list);
+    // yeni görevi listeye ekler
     list.add(json.encode(g.getMap()));
     print(list);
-    prefs.setString('gorev', json.encode(list));
+    prefs.setString('gorev', json.encode(list)); //güncellenen listeyi kaydeder
 
  _gorevController.clear();
   
@@ -56,22 +60,27 @@ void veriKaydet() async {
 
   }
 
+// görevleri getirir
 void _getGorevler() async {
   _gorevler = [];
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    //kayıtlı görevleri alır veya boş bir liste başlatır
     String gorevler = prefs.getString('gorev') ?? '[]';	
 
    List<dynamic> list = [];
 
+ //kayıtlı görevleri decode eder
   if (gorevler != null && gorevler.isNotEmpty) {
     var decoded = json.decode(gorevler);
     if (decoded is List) {
       list = decoded;
     } else {
-      // Eğer daha önce yanlışlıkla Map olarak kaydedildiyse sıfırla
+      
       list = [];
     }
   }
+
+  //decode edilen görevleri nesneye dönüştürür
    for (dynamic d in list) {
     _gorevler.add(Gorev.fromMap(json.decode(d))); 
    }
@@ -79,8 +88,10 @@ void _getGorevler() async {
 
    print(_gorevler);
 
+// Görevler için yapıldı, yapılmadı durumunu tutan liste oluştur
    _YapilanGorevler = List.generate(_gorevler.length,(index) => false);
 
+// state i günceller
 setState(() {
   
 });
@@ -88,19 +99,26 @@ setState(() {
 
   }
 
+// Yapılan görevleri listeden çıkarır  
 void GorevListeGuncelle() async {
 SharedPreferences prefs = await SharedPreferences.getInstance();
+
+// Tamamlanmamış görevler listesi oluşturulur
 List<Gorev> BekleyenGorevler =  [];
 
+// Tamamlanmamış görevleri ayıklar ve BekleyenGorevler listesine ekler
 for(int i=0; i < _gorevler.length ; i++)  {
   if(!_YapilanGorevler[i]) BekleyenGorevler.add(_gorevler[i]); 
 }
 
+// Görev listesini json formatında encode eder
 var BekleyenGorevlerEncoded = List.generate(
     BekleyenGorevler.length, (i)=> json.encode(BekleyenGorevler[i].getMap()) );
 
+// Güncellenen listeyi kaydeder
 prefs.setString('gorev', json.encode(BekleyenGorevlerEncoded));
 
+// Görev listesini yeniler
 _getGorevler();
 
 }
@@ -108,12 +126,16 @@ _getGorevler();
 
 void TumGorevSil() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // görev listesini boş liste olarak kaydeder yani sıfılar
   prefs.setString('gorev', json.encode([]));
+
+  // Görev listesini yeniler
   _getGorevler();
 }
 
 
-
+// Görev ekleme panelini açar.
 void BottomSheetAc() {
   showModalBottomSheet(
           context: context,
@@ -122,7 +144,7 @@ void BottomSheetAc() {
           height: 250,
           width: double.infinity,
          
-          color: Colors.tealAccent,
+          color: Colors.teal,
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,6 +159,7 @@ void BottomSheetAc() {
                       ),
                       
                     ),
+                    // kapatma butonu
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
                       child: Icon(
@@ -153,6 +176,8 @@ void BottomSheetAc() {
             ),
             SizedBox(
               height: 20,),
+
+              // Görev ekleme alanı 
             TextField(
               controller: _gorevController,
               decoration: InputDecoration(border: OutlineInputBorder(
@@ -178,6 +203,8 @@ void BottomSheetAc() {
                 children: [
                   Container(
                     width: (MediaQuery.of(context).size.width / 2) - 25,
+
+                    // girilen yazıyı sıfırlama butonu
                     child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent
@@ -189,6 +216,7 @@ void BottomSheetAc() {
               
                   Container(
                     width: (MediaQuery.of(context).size.width / 2) - 25,
+                    // görev ekleme butonu
                     child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.lightGreenAccent
@@ -216,13 +244,16 @@ void BottomSheetAc() {
 @override
   void initState() {
     super.initState();
+    // görev giriş alanı için controller oluşturur
     _gorevController = TextEditingController();
 
+// görevleri getirir
     _getGorevler();
   } 
 
 @override
   void dispose() {
+    // controllerı temizler
     _gorevController.dispose();
     super.dispose();
   }
@@ -234,14 +265,16 @@ void BottomSheetAc() {
       appBar: AppBar(
       title: Text('Günlük Görevler' ,style: GoogleFonts.lato()),
       actions: [
+        // yapılan görevleri silen buton
         IconButton(onPressed: GorevListeGuncelle , icon: Icon(Icons.save)),
 
+       // tüm görevleri silen buton
         IconButton(onPressed: TumGorevSil , icon: Icon(Icons.delete))
         
       ],
-      backgroundColor: Colors.greenAccent,centerTitle: true,),
+      backgroundColor: Colors.teal,centerTitle: true,),
       
-
+// görev listesi kısmı (görevler listesi boşsa texti yazar doluysa ekrana görevleri getirir )
       body: (_gorevler.isEmpty) ? Center(child: Text('Henüz bir görev eklenmedi!',style: GoogleFonts.lato(),), )
       
     : Column(
@@ -253,26 +286,36 @@ void BottomSheetAc() {
           margin: EdgeInsets.symmetric( vertical: 5),
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
+             color: Theme.of(context).colorScheme.surface,
           
             borderRadius: BorderRadius.circular(5),
-            border: Border.all(color: Colors.black, width: 0.5),
+            border: Border.all(
+            width: 0.5),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 e.gorev,
-                style: GoogleFonts.lato(fontSize: 16),
+                style: GoogleFonts.lato(fontSize: 16,
+                // görev yapıldıysa üstünü çizer yoksa aynı kalır
+                decoration: _YapilanGorevler[_gorevler.indexOf(e)] ? TextDecoration.lineThrough : TextDecoration.none,
+                color: Theme.of(context).colorScheme.onSurface, 
+                ),
               ),
+
+              
               Checkbox(
-                value: _YapilanGorevler[_gorevler.indexOf(e)], // Burada Checkbox'ın durumunu dinamik olarak değiştirebilirsiniz
+                
+                value: _YapilanGorevler[_gorevler.indexOf(e)],  
                 key: GlobalKey(),
                 onChanged: (value) {
                  setState(() {
+                  // check box değiştiğinde görev durumu güncellenir
                    _YapilanGorevler[_gorevler.indexOf(e)] = value ?? false;
 
                  });
-                } // Buraya state değişikliği için gerekli logiği ekleyebilirsiniz
+                } 
               ),
             ],
           ),
@@ -282,22 +325,25 @@ void BottomSheetAc() {
   ],
 ),
 
+// çoklu buton menüsü
       floatingActionButton: SpeedDial(
         child: Icon(Icons.menu,color: Colors.white,),
         backgroundColor: Colors.cyanAccent,
         children: [
+          // Görev ekle butonu
           SpeedDialChild(
             child: Icon(Icons.add),
             label: 'Görev Ekle',
             backgroundColor: Colors.greenAccent,
-            onTap: () => BottomSheetAc(),
+            onTap: () => BottomSheetAc(), //tıklanınca bottomsheeti açar
           ),
+          // Tema Değiştir butonu
           SpeedDialChild(
             child: Icon(Icons.brightness_6),
             
             label: 'Tema Değiştir',
             backgroundColor: Colors.redAccent,
-            onTap: () => Provider.of<Tema>(context, listen: false).temaDegistir(),
+            onTap: () => Provider.of<Tema>(context, listen: false).temaDegistir(), // tıklanınca temayı değiştirir
 
           ),
         ],
