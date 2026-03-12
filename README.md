@@ -65,4 +65,4 @@ lib/
 
 ## Lisans
 
-Bu proje MIT Lisansı ile lisanslanmıştır.
+Bu proje eğitim amaçlı geliştirilmiştir.
