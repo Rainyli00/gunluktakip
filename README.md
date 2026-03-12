@@ -31,7 +31,7 @@ lib/
 |-------|----------|
 | [provider](https://pub.dev/packages/provider) | Tema için durum yönetimi |
 | [shared_preferences](https://pub.dev/packages/shared_preferences) | Görevlerin yerel depolanması |
-| [google_fonts](https://pub.dev/packages/google_fonts) | Özel yazı tipleri (Lato, Roboto) |
+| [google_fonts](https://pub.dev/packages/google_fonts) | Özel yazı tipleri |
 | [flutter_speed_dial](https://pub.dev/packages/flutter_speed_dial) | Çoklu seçenekli FAB menüsü |
 
 ## Kurulum
