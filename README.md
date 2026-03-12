@@ -11,6 +11,7 @@ Flutter ile geliştirilmiş, günlük görevlerinizi kolayca takip edebileceğin
 - **Yerel Depolama** — Görevler SharedPreferences ile cihazda saklanır
 
 
+
 ## Proje Yapısı
 
 ```
@@ -18,7 +19,7 @@ lib/
 ├── main.dart                # Uygulama giriş noktası ve rota tanımları
 ├── tema.dart                # Tema yönetimi (ChangeNotifier)
 ├── model/
-│   └── gorev.dart           # Görev veri modeli (JSON serileştirme)
+│   └── gorev.dart           # Görev veri modeli (kaydetme/okuma için JSON dönüşümü)
 └── ekranlar/
     ├── giris_ekran.dart     # Karşılama / başlangıç ekranı
     └── ana_ekran.dart       # Ana görev yönetim ekranı
@@ -59,7 +60,7 @@ lib/
 ## Mimari
 
 - **Durum yönetimi:** Provider (tema değişimi için)
-- **Veri katmanı:** SharedPreferences üzerinde JSON serileştirme
+- **Veri katmanı:** Görevler JSON formatına çevrilip SharedPreferences ile cihazda saklanır
 - **UI:** Material Design, modal bottom sheet, Speed Dial FAB
 
 ## Lisans
