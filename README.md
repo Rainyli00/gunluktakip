@@ -61,7 +61,7 @@ lib/
 
 - **Durum yönetimi:** Provider (tema değişimi için)
 - **Veri katmanı:** Görevler JSON formatına çevrilip SharedPreferences ile cihazda saklanır
-- **UI:** Material Design, modal bottom sheet, Speed Dial FAB
+- **UI:** Material Design bileşenleri, alt açılır form paneli, çoklu işlem butonu (FAB)
 
 ## Lisans
 
