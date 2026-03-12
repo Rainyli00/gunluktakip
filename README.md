@@ -10,11 +10,6 @@ Flutter ile geliştirilmiş, günlük görevlerinizi kolayca takip edebileceğin
 - **Karanlık / Aydınlık Tema** — Hızlı tema geçişi (Provider ile)
 - **Yerel Depolama** — Görevler SharedPreferences ile cihazda saklanır
 
-## Ekran Görüntüleri
-
-| Giriş Ekranı | Ana Ekran |
-|:---:|:---:|
-| Arka plan görselli karşılama | Görev listesi, FAB menüsü |
 
 ## Proje Yapısı
 
